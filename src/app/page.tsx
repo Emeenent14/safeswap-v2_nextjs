@@ -2,9 +2,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-  // Use custom colors
-<div className="bg-[--color-primary] text-white p-4">
-  V4 Custom Color Test
+  <div className="h-32 w-32 bg-gradient-radial from-blue-500 to-purple-600">
+  Test Radial
 </div>
   );
 }
