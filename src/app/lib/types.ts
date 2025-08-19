@@ -248,7 +248,7 @@ export interface Notification {
   type: NotificationType;
   title: string;
   message: string;
-  data?: Record<string, any> ;
+  data?: Record<string, unknown> ; //dont forget to check the type before use
   isRead: boolean;
   createdAt: string;
   readAt?: string;
@@ -379,7 +379,7 @@ export interface ErrorState {
 
 export interface ModalState {
   isOpen: boolean;
-  data?: any;
+  data?: unknown; //dont forget to check the type before use
 }
 
 export interface TabState {
@@ -398,7 +398,7 @@ export interface StripePaymentIntent {
 // WebSocket Types
 export interface WebSocketMessage {
   type: 'message' | 'notification' | 'deal_update' | 'typing';
-  data: any;
+  data: unknown;// dont forget to check the type before use
   timestamp: string;
 }
 

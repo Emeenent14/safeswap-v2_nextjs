@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
-import { User } from "@/lib/types";
+import { User } from "./types";
 
 /**
  * JWT Authentication utilities for mock implementation
