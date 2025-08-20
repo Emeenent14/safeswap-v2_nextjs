@@ -89,6 +89,7 @@ export async function verifyToken(token: string): Promise<JWTPayload> {
     return payload as JWTPayload;
   } catch (error) {
     throw new Error("Invalid or expired token");
+    console.log("Token verification error:", error);
   }
 }
 
@@ -132,6 +133,7 @@ export async function getCurrentUser(request?: NextRequest): Promise<User | null
     };
   } catch (error) {
     return null;
+    console.log("Error getting current user, auth.ts line 136 :", error);
   }
 }
 
@@ -253,6 +255,7 @@ export async function verifyResetToken(token: string): Promise<{ userId: string;
     };
   } catch (error) {
     throw new Error("Invalid or expired reset token");
+    console.log("Password reset token verification error auth.ts line 258:", error);
   }
 }
 
@@ -298,6 +301,7 @@ export async function verifyEmailToken(token: string): Promise<{ userId: string;
     };
   } catch (error) {
     throw new Error("Invalid or expired verification token");
+    console.log("Email verification token verification error auth.ts line 304:", error);
   }
 }
 
