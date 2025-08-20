@@ -1,7 +1,7 @@
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT, jwtVerify, JWTPayload as JoseJWTPayload } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
-import { User } from "./types";
+import { User, UserRole } from "./types";
 
 /**
  * JWT Authentication utilities for mock implementation
@@ -24,15 +24,20 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
  * JWT payload interface
  * Maps to Django: Custom JWT claims
  */
-export interface JWTPayload {
+export interface JWTPayload extends JoseJWTPayload {
   sub: string; // User ID
   email: string;
-  name: string;
-  role: "user" | "admin";
+  firstName: string;
+  lastName: string;
+  role: UserRole;
   trustScore?: number;
-  kycVerified?: boolean;
+  isVerified?: boolean;
   iat: number;
   exp: number;
+  type?: "access" | "password_reset" | "email_verification";
+  iss?: string;
+  aud?: string | string[];
+  jti?: string;
 }
 
 /**
@@ -42,15 +47,15 @@ export interface JWTPayload {
 export async function generateToken(user: User): Promise<string> {
   const expirationTime = getExpirationTime(JWT_EXPIRES_IN);
   
-  const payload: JWTPayload = {
+  const payload: Partial<JWTPayload> = {
     sub: user.id,
     email: user.email,
-    name: user.name,
+    firstName: user.firstName,
+    lastName: user.lastName,
     role: user.role,
     trustScore: user.trustScore,
-    kycVerified: user.kycVerified,
-    iat: Math.floor(Date.now() / 1000),
-    exp: expirationTime,
+    isVerified: user.isVerified,
+    type: "access",
   };
 
   return await new SignJWT(payload)
@@ -67,6 +72,20 @@ export async function generateToken(user: User): Promise<string> {
 export async function verifyToken(token: string): Promise<JWTPayload> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
+    
+    // Type assertion with runtime validation
+    if (
+      typeof payload.sub !== 'string' ||
+      typeof payload.email !== 'string' ||
+      typeof payload.firstName !== 'string' ||
+      typeof payload.lastName !== 'string' ||
+      !['user', 'admin', 'super_admin'].includes(payload.role as string) ||
+      typeof payload.iat !== 'number' ||
+      typeof payload.exp !== 'number'
+    ) {
+      throw new Error("Invalid token payload structure");
+    }
+    
     return payload as JWTPayload;
   } catch (error) {
     throw new Error("Invalid or expired token");
@@ -86,8 +105,9 @@ export async function getCurrentUser(request?: NextRequest): Promise<User | null
       token = request.cookies.get("auth_token")?.value;
     } else {
       // Server component
-      const cookieStore = cookies();
-      token = cookieStore.get("auth_token")?.value;
+      const cookieStore = await cookies();
+      const authCookie = cookieStore.get("auth_token");
+      token = authCookie?.value;
     }
 
     if (!token) return null;
@@ -99,20 +119,16 @@ export async function getCurrentUser(request?: NextRequest): Promise<User | null
     return {
       id: payload.sub,
       email: payload.email,
-      name: payload.name,
-      role: payload.role,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      phone: "", // Mock data - would come from DB
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(payload.firstName + ' ' + payload.lastName)}`,
       trustScore: payload.trustScore || 50,
-      kycVerified: payload.kycVerified || false,
+      isVerified: payload.isVerified || false,
+      kycStatus: 'not_submitted', // Mock data
+      role: payload.role,
       createdAt: new Date().toISOString(), // Mock data
       updatedAt: new Date().toISOString(),
-      profile: {
-        bio: "",
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${payload.name}`,
-        phone: "",
-        location: "",
-        website: "",
-        socialLinks: {}
-      }
     };
   } catch (error) {
     return null;
@@ -125,7 +141,7 @@ export async function getCurrentUser(request?: NextRequest): Promise<User | null
  */
 export async function isAdmin(request?: NextRequest): Promise<boolean> {
   const user = await getCurrentUser(request);
-  return user?.role === "admin";
+  return user?.role === "admin" || user?.role === "super_admin";
 }
 
 /**
@@ -146,7 +162,7 @@ export async function requireAuth(request?: NextRequest): Promise<User> {
  */
 export async function requireAdmin(request?: NextRequest): Promise<User> {
   const user = await requireAuth(request);
-  if (user.role !== "admin") {
+  if (user.role !== "admin" && user.role !== "super_admin") {
     throw new Error("Admin access required");
   }
   return user;
@@ -200,18 +216,18 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
  * Maps to Django: PasswordResetTokenGenerator
  */
 export async function generateResetToken(userId: string, email: string): Promise<string> {
-  const payload = {
+  const expirationTime = Math.floor(Date.now() / 1000) + (60 * 15); // 15 minutes
+  
+  const payload: Partial<JWTPayload> = {
     sub: userId,
     email,
     type: "password_reset",
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (60 * 15), // 15 minutes
   };
 
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(payload.exp)
+    .setExpirationTime(expirationTime)
     .sign(JWT_SECRET);
 }
 
@@ -227,9 +243,13 @@ export async function verifyResetToken(token: string): Promise<{ userId: string;
       throw new Error("Invalid token type");
     }
     
+    if (typeof payload.sub !== 'string' || typeof payload.email !== 'string') {
+      throw new Error("Invalid token payload");
+    }
+    
     return {
-      userId: payload.sub as string,
-      email: payload.email as string,
+      userId: payload.sub,
+      email: payload.email,
     };
   } catch (error) {
     throw new Error("Invalid or expired reset token");
@@ -241,18 +261,18 @@ export async function verifyResetToken(token: string): Promise<{ userId: string;
  * Maps to Django: Email verification token generation
  */
 export async function generateVerificationToken(userId: string, email: string): Promise<string> {
-  const payload = {
+  const expirationTime = Math.floor(Date.now() / 1000) + (60 * 60 * 24); // 24 hours
+  
+  const payload: Partial<JWTPayload> = {
     sub: userId,
     email,
     type: "email_verification",
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24), // 24 hours
   };
 
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(payload.exp)
+    .setExpirationTime(expirationTime)
     .sign(JWT_SECRET);
 }
 
@@ -268,9 +288,13 @@ export async function verifyEmailToken(token: string): Promise<{ userId: string;
       throw new Error("Invalid token type");
     }
     
+    if (typeof payload.sub !== 'string' || typeof payload.email !== 'string') {
+      throw new Error("Invalid token payload");
+    }
+    
     return {
-      userId: payload.sub as string,
-      email: payload.email as string,
+      userId: payload.sub,
+      email: payload.email,
     };
   } catch (error) {
     throw new Error("Invalid or expired verification token");
@@ -325,62 +349,44 @@ export const MOCK_USERS: User[] = [
   {
     id: "user_1",
     email: "john@example.com", 
-    name: "John Doe",
-    role: "user",
+    firstName: "John",
+    lastName: "Doe",
+    phone: "+1234567890",
+    avatar: "https://api.dicebear.com/7.x/initials/svg?seed=John%20Doe",
     trustScore: 85,
-    kycVerified: true,
+    isVerified: true,
+    kycStatus: 'approved',
+    role: "user",
     createdAt: "2024-01-15T10:00:00Z",
     updatedAt: "2024-08-15T14:30:00Z",
-    profile: {
-      bio: "Experienced trader with focus on electronics and gadgets.",
-      avatar: "https://api.dicebear.com/7.x/initials/svg?seed=John Doe",
-      phone: "+1234567890",
-      location: "New York, NY",
-      website: "https://johndoe.com",
-      socialLinks: {
-        twitter: "https://twitter.com/johndoe",
-        linkedin: "https://linkedin.com/in/johndoe"
-      }
-    }
   },
   {
     id: "user_2",
     email: "jane@example.com",
-    name: "Jane Smith", 
-    role: "user",
+    firstName: "Jane",
+    lastName: "Smith", 
+    phone: "+1234567891",
+    avatar: "https://api.dicebear.com/7.x/initials/svg?seed=Jane%20Smith",
     trustScore: 92,
-    kycVerified: true,
+    isVerified: true,
+    kycStatus: 'approved',
+    role: "user",
     createdAt: "2024-02-10T08:00:00Z",
     updatedAt: "2024-08-14T16:45:00Z",
-    profile: {
-      bio: "Tech enthusiast and startup founder.",
-      avatar: "https://api.dicebear.com/7.x/initials/svg?seed=Jane Smith",
-      phone: "+1234567891",
-      location: "San Francisco, CA",
-      website: "https://janesmith.tech", 
-      socialLinks: {
-        twitter: "https://twitter.com/janesmith",
-        github: "https://github.com/janesmith"
-      }
-    }
   },
   {
     id: "admin_1",
     email: "admin@safeswap.com",
-    name: "Admin User",
-    role: "admin",
+    firstName: "Admin",
+    lastName: "User",
+    phone: "+1234567892",
+    avatar: "https://api.dicebear.com/7.x/initials/svg?seed=Admin%20User",
     trustScore: 100,
-    kycVerified: true,
+    isVerified: true,
+    kycStatus: 'approved',
+    role: "admin",
     createdAt: "2024-01-01T00:00:00Z",
     updatedAt: "2024-08-15T12:00:00Z", 
-    profile: {
-      bio: "SafeSwap platform administrator.",
-      avatar: "https://api.dicebear.com/7.x/initials/svg?seed=Admin User",
-      phone: "+1234567892",
-      location: "Remote",
-      website: "https://safeswap.com",
-      socialLinks: {}
-    }
   }
 ];
 
