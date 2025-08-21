@@ -397,7 +397,7 @@ export interface StripePaymentIntent {
 
 // WebSocket Types
 export interface WebSocketMessage {
-  type: 'message' | 'notification' | 'deal_update' | 'typing';
+  type: 'message' | 'notification' | 'deal_update' | 'typing' | 'auth';
   data: unknown;// dont forget to check the type before use
   timestamp: string;
 }
