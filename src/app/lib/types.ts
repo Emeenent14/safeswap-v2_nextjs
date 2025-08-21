@@ -404,12 +404,12 @@ export interface WebSocketMessage {
 
 // Search/Filter Types
 export interface DealFilters {
-  category?: DealCategory;
-  minAmount?: number;
-  maxAmount?: number;
-  status?: DealStatus;
-  userId?: string;
-  search?: string;
+  category?: DealCategory | undefined;
+  minAmount?: number | undefined;
+  maxAmount?: number | undefined;
+  status?: DealStatus | undefined;
+  userId?: string | undefined;
+  search?: string | undefined;
 }
 
 export interface UserFilters {
