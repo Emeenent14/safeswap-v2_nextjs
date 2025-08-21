@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyToken } from "./src/app/lib/auth";
+import { verifyToken } from "./src/lib/auth";
 
 
 /**

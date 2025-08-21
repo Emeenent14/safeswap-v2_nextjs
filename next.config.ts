@@ -23,13 +23,17 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
-  webpack: (config, { dev, isServer }) => {
+
+// webpack: (config, { dev, isServer }) => {
     // Optimize bundle size
-    if (!dev && !isServer) {
-      config.optimization.splitChunks.chunks = 'all';
-    }
-    return config;
-  },
+//   if (!dev && !isServer) {
+//    config.optimization.splitChunks.chunks = 'all';
+//  }
+//  return config;
+ // },
+//the part commented out is for webpack optimization( code splitting ), which is not needed with turbopack
+
+
   // Security headers
   async headers() {
     return [
