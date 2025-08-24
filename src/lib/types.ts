@@ -345,7 +345,7 @@ export interface RegisterForm {
 
 export interface CreateDealForm {
   title: string;
-  description: string;
+  description: string ;
   category: DealCategory;
   amount: number;
   currency: string;
