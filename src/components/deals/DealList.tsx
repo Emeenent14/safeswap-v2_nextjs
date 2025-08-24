@@ -5,8 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import DealCard from './DealCard'
-import   EmptyState   from '@/components/common/EmptyState'
-import  PageLoader  from '@/components/common/PageLoader'
+import EmptyState from '@/components/common/EmptyState'
+import PageLoader from '@/components/common/PageLoader'
 import { Search, Filter, SortAsc, SortDesc, RefreshCw } from 'lucide-react'
 import type { Deal, DealStatus, DealCategory, DealFilters } from '@/lib/types'
 import { useDeals } from '@/hooks/useDeals'
@@ -57,6 +57,38 @@ const sortOptions = [
   { value: 'title_desc', label: 'Title Z-A' }
 ]
 
+// Type-safe sorting function
+function sortDeals(deals: Deal[], sortBy: string): Deal[] {
+  const [sortField, sortOrder] = sortBy.split('_') as [string, 'asc' | 'desc']
+  
+  return [...deals].sort((a, b) => {
+    let aValue: string | number | Date
+    let bValue: string | number | Date
+    
+    switch (sortField) {
+      case 'created':
+        aValue = new Date(a.createdAt)
+        bValue = new Date(b.createdAt)
+        break
+      case 'amount':
+        aValue = a.amount
+        bValue = b.amount
+        break
+      case 'title':
+        aValue = a.title.toLowerCase()
+        bValue = b.title.toLowerCase()
+        break
+      default:
+        aValue = new Date(a.createdAt)
+        bValue = new Date(b.createdAt)
+    }
+
+    if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1
+    if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1
+    return 0
+  })
+}
+
 export default function DealList({ 
   variant = 'all',
   showFilters = true,
@@ -103,32 +135,7 @@ export default function DealList({
     }
 
     // Apply client-side sorting
-    const [sortField, sortOrder] = sortBy.split('_') as [string, 'asc' | 'desc']
-    displayDeals = [...displayDeals].sort((a, b) => {
-      let aValue: any, bValue: any
-      
-      switch (sortField) {
-        case 'created':
-          aValue = new Date(a.createdAt)
-          bValue = new Date(b.createdAt)
-          break
-        case 'amount':
-          aValue = a.amount
-          bValue = b.amount
-          break
-        case 'title':
-          aValue = a.title.toLowerCase()
-          bValue = b.title.toLowerCase()
-          break
-        default:
-          aValue = new Date(a.createdAt)
-          bValue = new Date(b.createdAt)
-      }
-
-      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1
-      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1
-      return 0
-    })
+    displayDeals = sortDeals(displayDeals, sortBy)
 
     // Apply limit if specified
     if (limit) {
@@ -146,9 +153,32 @@ export default function DealList({
     setFilters({ search: query })
   }
 
-  // Handle filter changes
-  const handleFilterChange = (key: keyof DealFilters, value: any) => {
-    setFilters({ [key]: value || undefined })
+  // Handle filter changes - type-safe version
+  const handleFilterChange = (key: keyof DealFilters, value: string) => {
+    const filterValue = value || undefined
+    
+    // Type-safe filter updates
+    switch (key) {
+      case 'category':
+        setFilters({ [key]: filterValue as DealCategory | undefined })
+        break
+      case 'status':
+        setFilters({ [key]: filterValue as DealStatus | undefined })
+        break
+      case 'search':
+        setFilters({ [key]: filterValue })
+        break
+      case 'userId':
+        setFilters({ [key]: filterValue })
+        break
+      case 'minAmount':
+      case 'maxAmount':
+        setFilters({ [key]: filterValue ? Number(filterValue) : undefined })
+        break
+      default:
+        // This should never happen with proper typing, but adds safety
+        break
+    }
   }
 
   // Handle refresh
@@ -287,9 +317,10 @@ export default function DealList({
         <PageLoader />
       )}
 
-      {/* Empty State */}
+      {/* Empty State - Fixed with proper variant prop */}
       {!isLoading && displayDeals.length === 0 && (
         <EmptyState
+          variant={variant === 'my-deals' || variant === 'buying' || variant === 'selling' ? 'deals' : 'search'}
           title="No deals found"
           description={
             variant === 'my-deals' 
@@ -301,7 +332,9 @@ export default function DealList({
               : "No deals match your current filters."
           }
           actionLabel={variant === 'my-deals' || variant === 'selling' ? "Create Deal" : undefined}
-          actionHref="/dashboard/deals/create"
+          actionHref={variant === 'my-deals' || variant === 'selling' ? "/dashboard/deals/create" : undefined}
+          showRefresh={variant === 'all'}
+          onRefresh={variant === 'all' ? handleRefresh : undefined}
         />
       )}
 

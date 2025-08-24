@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
 import DealStatusBadge from './DealStatusBadge'
 import MilestoneCard from './MilestoneCard'
-import { ConfirmationModal } from '@/components/common/ConfirmationModal'
+import  ConfirmationModal  from '@/components/common/ConfirmationModal'
 import { 
   Calendar, 
   DollarSign, 
@@ -20,7 +20,7 @@ import {
   CheckCircle,
   CreditCard
 } from 'lucide-react'
-import type { Deal } from '@/lib/types'
+import type { Deal, DealCategory } from '@/lib/types'
 import { useAuth } from '@/hooks/useAuth'
 import { useDeals } from '@/hooks/useDeals'
 import { cn } from '@/lib/utils'
@@ -53,7 +53,79 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
   useEffect(() => {
     fetchDealById(dealId)
     fetchMilestones(dealId)
-  }, [dealId])
+  }, [dealId, fetchDealById, fetchMilestones])
+
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currentDeal?.currency || 'USD'
+    }).format(amount)
+  }
+
+  const formatDate = (date: string | Date): string => {
+    return new Date(date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  const getCategoryLabel = (category: DealCategory): string => {
+    return category.split('_').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ')
+  }
+
+  const getProgressPercentage = (): number => {
+    if (!milestones.length) return 0
+    const completedMilestones = milestones.filter(m => m.status === 'approved').length
+    return (completedMilestones / milestones.length) * 100
+  }
+
+  const getTotalMilestoneValue = (): number => {
+    return milestones.reduce((sum, milestone) => sum + milestone.amount, 0)
+  }
+
+  const getCompletedValue = (): number => {
+    return milestones
+      .filter(m => m.status === 'approved')
+      .reduce((sum, milestone) => sum + milestone.amount, 0)
+  }
+
+  const handleAccept = async (): Promise<void> => {
+    try {
+      await acceptDeal(dealId)
+    } catch (error) {
+      // Error handled by hook
+    }
+  }
+
+  const handleReject = async (): Promise<void> => {
+    try {
+      await rejectDeal(dealId)
+      setShowRejectModal(false)
+    } catch (error) {
+      // Error handled by hook
+    }
+  }
+
+  const handleCancel = async (): Promise<void> => {
+    try {
+      await cancelDeal(dealId)
+      setShowCancelModal(false)
+    } catch (error) {
+      // Error handled by hook
+    }
+  }
+
+  const handleComplete = async (): Promise<void> => {
+    try {
+      await completeDeal(dealId)
+    } catch (error) {
+      // Error handled by hook
+    }
+  }
 
   if (isLoading) {
     return <div className="flex justify-center p-8">Loading deal details...</div>
@@ -77,80 +149,8 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
   const isSeller = user?.id === deal.sellerId
   const isOwner = isBuyer || isSeller
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: deal.currency || 'USD'
-    }).format(amount)
-  }
-
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
-
-  const getCategoryLabel = (category: string) => {
-    return category.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ')
-  }
-
-  const getProgressPercentage = () => {
-    if (!milestones.length) return 0
-    const completedMilestones = milestones.filter(m => m.status === 'approved').length
-    return (completedMilestones / milestones.length) * 100
-  }
-
-  const getTotalMilestoneValue = () => {
-    return milestones.reduce((sum, milestone) => sum + milestone.amount, 0)
-  }
-
-  const getCompletedValue = () => {
-    return milestones
-      .filter(m => m.status === 'approved')
-      .reduce((sum, milestone) => sum + milestone.amount, 0)
-  }
-
-  const handleAccept = async () => {
-    try {
-      await acceptDeal(deal.id)
-    } catch (error) {
-      // Error handled by hook
-    }
-  }
-
-  const handleReject = async () => {
-    try {
-      await rejectDeal(deal.id)
-      setShowRejectModal(false)
-    } catch (error) {
-      // Error handled by hook
-    }
-  }
-
-  const handleCancel = async () => {
-    try {
-      await cancelDeal(deal.id)
-      setShowCancelModal(false)
-    } catch (error) {
-      // Error handled by hook
-    }
-  }
-
-  const handleComplete = async () => {
-    try {
-      await completeDeal(deal.id)
-    } catch (error) {
-      // Error handled by hook
-    }
-  }
-
-  const getActionButtons = () => {
-    const buttons = []
+  const getActionButtons = (): React.ReactElement[] => {
+    const buttons: React.ReactElement[] = []
 
     // Accept/Reject for sellers when deal is created
     if (canAcceptDeal(deal)) {
@@ -208,6 +208,8 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
 
     return buttons
   }
+
+  const actionButtons = getActionButtons()
 
   return (
     <div className={cn('max-w-6xl mx-auto space-y-6', className)}>
@@ -294,7 +296,7 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {milestones.map((milestone, index) => (
+                {milestones.map((milestone) => (
                   <MilestoneCard
                     key={milestone.id}
                     milestone={milestone}
@@ -308,11 +310,11 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
           )}
 
           {/* Action Buttons */}
-          {getActionButtons().length > 0 && (
+          {actionButtons.length > 0 && (
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-wrap gap-3">
-                  {getActionButtons()}
+                  {actionButtons}
                 </div>
               </CardContent>
             </Card>
@@ -335,27 +337,29 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={deal.buyer?.avatar || ''} />
                   <AvatarFallback>
-                    {deal.buyer?.firstName[0]}{deal.buyer?.lastName[0]}
+                    {deal.buyer?.firstName?.[0] || '?'}{deal.buyer?.lastName?.[0] || '?'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium">
-                      {deal.buyer?.firstName} {deal.buyer?.lastName}
+                      {deal.buyer ? `${deal.buyer.firstName} ${deal.buyer.lastName}` : 'Unknown'}
                     </p>
                     {isBuyer && (
                       <Badge variant="secondary" className="text-xs">You</Badge>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Buyer • Trust Score: {deal.buyer?.trustScore || 'N/A'}
+                    Buyer • Trust Score: {deal.buyer?.trustScore ?? 'N/A'}
                   </p>
                 </div>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href={`/public-profile/${deal.buyer?.id}`}>
-                    View Profile
-                  </Link>
-                </Button>
+                {deal.buyer && (
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link href={`/public-profile/${deal.buyer.id}`}>
+                      View Profile
+                    </Link>
+                  </Button>
+                )}
               </div>
 
               <Separator />
@@ -365,7 +369,7 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={deal.seller?.avatar || ''} />
                   <AvatarFallback>
-                    {deal.seller?.firstName?.[0] || '?'}{deal.seller?.lastName?.[0] || ''}
+                    {deal.seller?.firstName?.[0] || '?'}{deal.seller?.lastName?.[0] || '?'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
@@ -378,7 +382,7 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Seller • Trust Score: {deal.seller?.trustScore || 'N/A'}
+                    Seller • Trust Score: {deal.seller?.trustScore ?? 'N/A'}
                   </p>
                 </div>
                 {deal.seller && (
@@ -501,8 +505,8 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {deal.files.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
+                {deal.files.map((file) => (
+                  <div key={file.id} className="flex items-center justify-between p-2 bg-muted rounded">
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4" />
                       <span className="text-sm truncate">{file.name}</span>
@@ -520,22 +524,22 @@ export default function DealDetails({ dealId, className }: DealDetailsProps) {
 
       {/* Confirmation Modals */}
       <ConfirmationModal
-        isOpen={showCancelModal}
-        onClose={() => setShowCancelModal(false)}
+        open={showCancelModal}
+        onOpenChange={setShowCancelModal}
         onConfirm={handleCancel}
         title="Cancel Deal"
         description="Are you sure you want to cancel this deal? This action cannot be undone."
-        confirmText="Cancel Deal"
+        confirmLabel="Cancel Deal"
         variant="destructive"
       />
 
       <ConfirmationModal
-        isOpen={showRejectModal}
-        onClose={() => setShowRejectModal(false)}
+        open={showRejectModal}
+        onOpenChange={setShowRejectModal}
         onConfirm={handleReject}
         title="Reject Deal"
         description="Are you sure you want to reject this deal? The buyer will be notified."
-        confirmText="Reject Deal"
+        confirmLabel="Reject Deal"
         variant="destructive"
       />
     </div>

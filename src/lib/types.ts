@@ -349,15 +349,15 @@ export interface CreateDealForm {
   category: DealCategory;
   amount: number;
   currency: string;
-  sellerId?: string;
+  sellerId?: string | undefined;
   milestones: CreateMilestoneForm[];
 }
 
 export interface CreateMilestoneForm {
   title: string;
-  description?: string;
+  description?: string | undefined;
   amount: number;
-  dueDate?: string;
+  dueDate?: string | undefined;
 }
 
 export interface DisputeForm {
