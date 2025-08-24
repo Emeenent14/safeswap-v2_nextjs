@@ -330,7 +330,7 @@ export interface PaginatedResponse<T> {
 export interface LoginForm {
   email: string;
   password: string;
-  remember?: boolean;
+  remember?: boolean | undefined; // Keeps optional but allow undefined
 }
 
 export interface RegisterForm {
@@ -339,8 +339,8 @@ export interface RegisterForm {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  phone?: string;
-  termsAccepted: boolean;
+  phone?: string | undefined; // Allow undefined explicitly
+  termsAccepted: boolean; // Must be true, not optional
 }
 
 export interface CreateDealForm {
