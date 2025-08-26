@@ -16,15 +16,16 @@ export interface User {
   updatedAt: string;
 }
 
-export interface UserProfile extends User {
-  bio?: string;
-  location?: string;
-  completedDeals: number;
-  successRate: number;
-  totalVolume: number;
-  languages: string[];
-  preferredCategories: string[];
+export interface UserProfile {
+  bio?: string
+  location?: string
+  completedDeals: number
+  successRate: number
+  totalVolume: number
+  languages: string[]
+  preferredCategories: string[]
 }
+
 
 export type UserRole = 'user' | 'admin' | 'super_admin';
 
