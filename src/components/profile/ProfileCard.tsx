@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import { MapPin, Calendar, Star, Shield, CheckCircle, AlertCircle } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

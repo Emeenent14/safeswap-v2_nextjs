@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { ProfileCard } from "@/components/profile/ProfileCard"
 import { TrustScoreDisplay } from "@/components/profile/TrustScoreDisplay"
 import { UserStats } from "@/components/profile/UserStats"
 import PublicLayout from "@/components/layout/PublicLayout"
 import { MessageCircle, Shield, ArrowLeft } from "lucide-react"
 import type { User, UserProfile } from "@/lib/types"
+import { PublicProfileClient } from "../PublicProfileClient"
 
 // Mock data for public profiles
 const mockPublicUsers: (User & { profile: UserProfile })[] = [
@@ -127,6 +127,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
+// This is now a Server Component (no 'use client')
 export default async function PublicProfilePage({ params }: { params: { id: string } }) {
   const user = await getPublicUser(params.id)
 
@@ -160,23 +161,8 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Profile Section */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Profile Card */}
-              <ProfileCard
-                user={user}
-                profile={user.profile}
-                variant="public"
-                showActions={true}
-                showTrustScore={true}
-                showStats={true}
-                onMessage={() => {
-                  window.location.href =
-                    "/login?redirect=" + encodeURIComponent(`/messages/new?user=${user.id}`)
-                }}
-                onViewDeals={() => {
-                  window.location.href =
-                    "/login?redirect=" + encodeURIComponent(`/deals?user=${user.id}`)
-                }}
-              />
+              {/* Profile Card - Now using Client Component wrapper */}
+              <PublicProfileClient user={user} />
 
               {/* Detailed Stats */}
               <Card>
