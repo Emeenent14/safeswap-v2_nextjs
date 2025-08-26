@@ -392,7 +392,20 @@ export const MOCK_USERS: User[] = [
     createdAt: "2024-01-01T00:00:00Z",
     updatedAt: "2024-08-15T12:00:00Z", 
   }
-];
+] as const;
+
+// Helper functions to safely access mock users
+export const getMockUser = (index: number): User | undefined => {
+  return MOCK_USERS[index];
+};
+
+export const getAdminUser = (): User => {
+  const admin = MOCK_USERS.find(user => user.role === "admin");
+  if (!admin) {
+    throw new Error("Admin user not found in mock data");
+  }
+  return admin;
+};
 
 /**
  * Mock password hashes (password is "password123" for all users)

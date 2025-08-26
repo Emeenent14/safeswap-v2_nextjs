@@ -283,11 +283,11 @@ export interface KYCSubmission {
   dateOfBirth: string;
   nationality: string;
   status: KYCStatus;
-  rejectionReason?: string;
-  reviewedBy?: string;
-  reviewer?: User;
+  rejectionReason?: string | undefined; // Explicitly allow undefined
+  reviewedBy?: string | undefined;     // Explicitly allow undefined
+  reviewer?: User | undefined;         // Explicitly allow undefined
   submittedAt: string;
-  reviewedAt?: string;
+  reviewedAt?: string | undefined;     // Explicitly allow undefined
 }
 
 export type KYCDocumentType = 'passport' | 'drivers_license' | 'national_id';
