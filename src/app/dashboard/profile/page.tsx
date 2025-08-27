@@ -138,16 +138,17 @@ export default function ProfilePage() {
                 user={mockUser}
                 profile={mockProfile}
                 showActions={true}
+                showTrustScore={true}
                 showStats={true}
-                variant="default" // Changed from "detailed" to "default"
+                variant="default"
               />
             </div>
             
             <div>
               <TrustScoreDisplay 
                 user={mockUser}
-                showBreakdown={false}
-                showTrend={false} // Changed from showHistory to showTrend
+                showBreakdown={true}
+                showTrend={true}
                 variant="compact"
               />
             </div>
@@ -157,7 +158,7 @@ export default function ProfilePage() {
           <UserStats 
             user={mockUser}
             profile={mockProfile}
-            variant="default" // Removed showChartsEnabled and timeRange, added required props
+            variant="default"
             className="grid-cols-2 lg:grid-cols-4"
           />
 

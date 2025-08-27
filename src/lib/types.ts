@@ -6,8 +6,8 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  phone?: string;
-  avatar?: string;
+  phone?: string | undefined;  // Explicitly allow undefined
+  avatar?: string | undefined; // Explicitly allow undefined
   trustScore: number;
   isVerified: boolean;
   kycStatus: KYCStatus;
