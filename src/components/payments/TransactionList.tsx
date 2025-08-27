@@ -30,6 +30,7 @@ interface TransactionListProps {
   showFilters?: boolean
   compact?: boolean
   limit?: number
+  showPagination?: boolean; 
   className?: string
 }
 
