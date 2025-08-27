@@ -1,3 +1,5 @@
+"use client"
+
 import { ReactNode } from 'react'
 import { redirect } from 'next/navigation'
 import  Header  from '@/components/common/Header'
