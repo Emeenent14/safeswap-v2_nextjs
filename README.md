@@ -1,72 +1,73 @@
-SafeSwap - The Trust Layer for Online Deals
-Overview
-SafeSwap is a universal trust layer for online transactions - a mobile-first platform that securely holds funds in escrow until both parties fulfill their obligations in a deal. It goes beyond traditional escrow by building digital trust through verified profiles, trust scoring, and comprehensive deal management.
+# 🚀 SafeSwap — The Trust Layer for Online Deals  
 
-Live Demo: [Coming Soon]
-Repository: [Your Repository URL]
+> **Making digital trust universal. Built with ❤️ for honest people online.**  
 
-🎯 Problem Statement
-Digital transactions suffer from a fundamental trust deficit:
+---  
 
-Freelancers deliver work but get ghosted without payment
+## 🌍 Overview  
+SafeSwap is a **mobile-first trust layer** for online transactions — a platform that securely holds funds in **escrow** until both parties fulfill their obligations.  
+It goes beyond traditional escrow with:  
+- ✅ Verified profiles  
+- ⭐ Trust scoring  
+- 📑 Comprehensive deal management  
 
-Buyers hesitate to send money fearing they won't receive goods/services
+🔗 **Live Demo:** Coming Soon  
+📂 **Repository:** [Your Repository URL]  
 
-Sellers delay shipping worried about payment disputes
+---  
 
-This lack of trust stalls commerce and limits opportunities for honest people
+## 🎯 Problem Statement  
+Digital transactions suffer from a **trust deficit**:  
+- Freelancers deliver work but get ghosted without payment 💀  
+- Buyers hesitate to send money, fearing scams 💸  
+- Sellers delay shipping, worried about disputes 📦  
 
-💡 Solution
-SafeSwap provides a universal safety net for online transactions with:
+👉 This lack of trust slows down commerce and kills opportunities.  
 
-Escrow Protection: Funds locked until both parties confirm fulfillment
+---  
 
-Trust Profiles: Verified identities with reliability scores and deal history
+## 💡 Solution  
+SafeSwap is the **universal safety net** for digital deals:  
 
-Savings Vault: Time-release savings for personal goals or sending to others
+🔒 Escrow Protection — funds locked until both sides confirm fulfillment  
+👤 Trust Profiles — verified identities, reliability scores, and deal history  
+💰 Savings Vault — time-release savings & secure transfers  
+⚖️ Dispute Resolution — admin-mediated conflict handling with evidence  
+🔌 API-First — integrable with e-commerce platforms & marketplaces  
 
-Dispute Resolution: Admin-mediated conflict resolution with evidence tracking
+---  
 
-API-First Design: Easily integrable with e-commerce platforms and marketplaces
+## 🛠️ Technology Stack  
 
-🛠️ Technology Stack
-Core Framework
-Next.js 15+ with App Router
+**Core Framework**  
+- ⚛️ Next.js 15+ (App Router)  
+- ⚛️ React 19+ with TypeScript (strict mode)  
+- 🎨 Tailwind CSS v3 + shadcn/ui  
 
-React 19+ with TypeScript strict mode
+**State Management**  
+- Zustand (global)  
+- React Query (server state)  
 
-Tailwind CSS v3 for styling
+**Forms & Validation**  
+- React Hook Form  
+- Yup  
 
-shadcn/ui component library
+**Payments & Auth**  
+- 💳 Stripe (escrow + payments)  
+- 🔑 JOSE (JWT utilities)  
+- 🌐 Axios (HTTP client)  
 
-State Management
-Zustand for global state management
+**Additional Libraries**  
+- Lucide React (icons)  
+- Date-fns (date utilities)  
+- React Day Picker (calendar)  
+- CMDK (command palette)  
 
-React Query for server state management
+---  
 
-Forms & Validation
-React Hook Form for form management
+## 📁 Project Structure  
 
-Yup for schema validation
-
-Payments & Authentication
-Stripe for payment processing (test mode)
-
-JOSE for JWT utilities (mock implementation)
-
-Axios for HTTP client
-
-Additional Libraries
-Lucide React for icons
-
-Date-fns for date utilities
-
-React Day Picker for date selection
-
-CMDK for command palette
-
-📁 Project Structure
-text
+```text
 safeswap/
 ├── app/                    # Next.js App Router pages
 │   ├── (auth)/            # Authentication pages
@@ -75,363 +76,165 @@ safeswap/
 │   ├── legal/             # Terms and privacy pages
 │   ├── api/               # API routes
 │   └── public-profile/    # Public user profiles
-├── components/            # React components
-│   ├── ui/               # shadcn/ui components
-│   ├── auth/             # Authentication components
-│   ├── common/           # Shared components
-│   ├── dashboard/        # Dashboard components
-│   ├── deals/            # Deal management components
-│   ├── kyc/              # KYC components
-│   ├── layout/           # Layout components
-│   ├── messaging/        # Messaging components
-│   ├── payments/         # Payment components
-│   └── profile/          # Profile components
-├── hooks/                # Custom React hooks
-├── lib/                  # Utility libraries
-├── store/                # Zustand stores
-└── public/               # Static assets
-🔧 Key Features
-1. Authentication & User Management
-JWT-based authentication with HTTP-only cookies
+├── components/            
+│   ├── ui/                # shadcn/ui components
+│   ├── auth/              # Authentication components
+│   ├── dashboard/         # Dashboard components
+│   ├── deals/             # Deal management
+│   ├── payments/          # Payments UI
+│   ├── profile/           # Profile components
+│   └── messaging/         # Messaging system
+├── hooks/                 # Custom hooks
+├── lib/                   # Utility libraries
+├── store/                 # Zustand stores
+└── public/                # Static assets
+```
 
-Email and phone verification flows
+---  
 
-Password reset functionality
+## 🔧 Key Features  
 
-Role-based access control (User, Admin, Super Admin)
+### 1️⃣ Authentication & User Management  
+- JWT auth with HTTP-only cookies  
+- Email + phone verification  
+- Password reset  
+- Role-based access (User, Admin, Super Admin)  
 
-2. Deal Management
-Multi-step deal creation with dynamic milestones
+### 2️⃣ Deal Management  
+- Multi-step creation with milestones  
+- Filtering, search, role-based actions  
+- Real-time updates + notifications  
+- File attachments for documentation  
 
-Advanced filtering and search capabilities
+### 3️⃣ Escrow & Payments  
+- 💳 Stripe integration  
+- 3% transparent platform fee  
+- Payment intents + webhooks  
+- Refunds & disputes  
 
-Role-based permissions for deal actions
+### 4️⃣ Trust System  
+- Trust score calculation  
+- KYC with doc uploads  
+- Public profiles with history  
+- Success rate metrics  
 
-Real-time status updates and notifications
+### 5️⃣ Messaging  
+- In-app chat tied to deals  
+- File sharing + validation  
+- Real-time (WebSocket-ready)  
+- Typing indicators + read receipts  
 
-File attachment support for deal documentation
+### 6️⃣ Admin Panel  
+- User management & score adjustment  
+- Deal monitoring + interventions  
+- KYC review + approval  
+- Dispute resolution tools  
+- System analytics  
 
-3. Escrow & Payments
-Stripe integration for secure payment processing
+### 7️⃣ Savings Feature  
+- ⏳ Time-release savings  
+- Send-to-others transfers  
+- Goal tracking  
 
-3% platform fee calculation with transparent breakdown
+---  
 
-Payment intent creation with escrow handling
+## 🚀 Getting Started  
 
-Webhook processing for payment lifecycle events
+**Requirements**  
+- Node.js 18+  
+- npm or yarn  
+- Stripe account (test mode)  
 
-Refund and dispute handling capabilities
+**Setup**  
 
-4. Trust System
-Trust score calculation based on user behavior
-
-KYC verification with document upload and admin review
-
-Public trust profiles showing transaction history
-
-Success rate and volume metrics
-
-5. Messaging System
-In-app messaging tied to specific deals
-
-File sharing capabilities with validation
-
-Real-time messaging (WebSocket-ready architecture)
-
-Typing indicators and read receipts
-
-6. Admin Panel
-User management with trust score adjustment
-
-Deal monitoring and intervention capabilities
-
-KYC submission review and approval
-
-Dispute resolution tools
-
-System analytics and reporting
-
-7. Savings Feature
-Self-lock savings with time-release functionality
-
-Send-to-others capability for secure transfers
-
-Savings goal tracking and management
-
-🚀 Getting Started
-Prerequisites
-Node.js 18+
-
-npm or yarn
-
-Stripe account (for payment processing)
-
-Installation
-Clone the repository
-
-bash
+```bash
 git clone [your-repo-url]
 cd safeswap
-Install dependencies
-
-bash
-npm install
-# or
-yarn install
-Set up environment variables
-
-bash
+npm install   # or yarn install
 cp .env.example .env.local
-Edit .env.local with your configuration:
+```  
 
-env
-# App Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=SafeSwap
-NODE_ENV=development
+Update `.env.local` with your config (Stripe, JWT, etc.).  
 
-# Stripe Configuration
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_key_here
-STRIPE_SECRET_KEY=sk_test_your_key_here
-STRIPE_WEBHOOK_SECRET=whsec_your_secret_here
+**Run Dev Server**  
 
-# JWT Configuration
-JWT_SECRET=your_super_secret_jwt_key_min_32_chars
-JWT_EXPIRES_IN=7d
-
-# API Configuration
-API_BASE_URL=http://localhost:3000/api
-UPLOAD_MAX_SIZE=10485760
-UPLOAD_ALLOWED_TYPES=image/jpeg,image/png,image/webp,application/pdf,text/plain
-
-# Security
-NEXTAUTH_SECRET=your_nextauth_secret_here
-NEXTAUTH_URL=http://localhost:3000
-Run the development server
-
-bash
+```bash
 npm run dev
 # or
 yarn dev
-Open your browser
-Navigate to http://localhost:3000
+```  
 
-📋 Scripts
-npm run dev - Start development server
+Open 👉 [http://localhost:3000](http://localhost:3000)  
 
-npm run build - Build for production
+---  
 
-npm run start - Start production server
+## 🎨 Design System  
 
-npm run lint - Run ESLint
+- 🎨 Colors: Blue (trust), Green (success), Orange (warning), Slate (neutral)  
+- 🖋️ Font: Inter (400–700)  
+- 📱 Responsive: mobile-first, collapsible nav, dark/light themes  
 
-npm run type-check - Run TypeScript compiler
+---  
 
-🎨 Design System
-Color Palette
-Primary: Blue (trust, security)
+## 🔐 Security  
 
-Secondary: Green (success, completion)
+- HTTP-only JWTs  
+- Yup input validation  
+- Role-based access control  
+- File upload validation (type + size)  
+- React XSS protection + CORS  
 
-Accent: Orange (warning, action required)
+---  
 
-Neutral: Slate (backgrounds, text)
+## 🧪 Testing  
 
-Typography
-Font Family: Inter (clean, readable)
+- 🔬 React Testing Library (components)  
+- ✅ Jest-axe (accessibility)  
+- 🎭 Playwright (E2E)  
+- ⚡ Lighthouse CI (performance)  
 
-Scale: Tailwind's default typography scale
+---  
 
-Weights: Regular (400), Medium (500), Semibold (600), Bold (700)
+## 🚢 Deployment  
 
-Components
-Built on shadcn/ui with customizations for:
+- Vercel (1-click deploy) ✅  
+- Alternatives: Netlify, Railway, AWS Amplify, DO App Platform  
 
-Consistent spacing and sizing
+---  
 
-Mobile-first responsive design
+## 📈 Performance Optimizations  
 
-Accessibility compliance (ARIA labels, keyboard navigation)
+- Next.js Image optimization  
+- Code splitting + dynamic imports  
+- Static generation for public pages  
+- CDN for static assets  
 
-Dark/light theme support
+---  
 
-🔐 Security Features
-JWT authentication with HTTP-only cookies
+## 🤝 Contributing  
 
-Input validation using Yup schemas
+1. Fork repo  
+2. Create branch `feature/amazing-feature`  
+3. Commit → Push → Open PR  
 
-Role-based access control
+**Code Standards:**  
+- TypeScript strict mode  
+- ESLint + Prettier  
+- Conventional commits  
 
-File upload validation (type, size)
+---  
 
-XSS protection through React's built-in escaping
+## 📄 License  
+MIT — see LICENSE.md  
 
-CORS configuration for API routes
+---  
 
-Environment variable protection
+## 🙏 Acknowledgments  
+- shadcn/ui  
+- Tailwind CSS  
+- Next.js  
+- Stripe  
 
-📱 Responsive Design
-SafeSwap follows a mobile-first approach with:
+---  
 
-Flexible grid layouts using Tailwind CSS
-
-Touch-friendly button sizes and spacing
-
-Collapsible navigation for mobile devices
-
-Optimized images and assets for different screen sizes
-
-Progressive enhancement for core functionality
-
-🔄 State Management
-Zustand Stores
-AuthStore: User authentication state and profile data
-
-DealStore: Deal management with filtering and pagination
-
-NotificationStore: In-app notifications and toasts
-
-UIStore: Theme, modals, loading states, and UI preferences
-
-React Query
-Server state management for API data
-
-Automatic caching and background updates
-
-Optimistic updates for better UX
-
-Error handling and retry logic
-
-📊 API Architecture
-RESTful Design
-All API endpoints follow REST conventions with consistent:
-
-HTTP method usage (GET, POST, PATCH, DELETE)
-
-Status code responses
-
-Error handling format
-
-Authentication requirements
-
-Key Endpoints
-POST /api/auth/login - User authentication
-
-POST /api/auth/register - User registration
-
-GET /api/deals - List deals with filtering
-
-POST /api/deals - Create new deal
-
-POST /api/payments/stripe/create-intent - Create payment intent
-
-POST /api/upload - File upload with validation
-
-Django Integration
-All API routes include comprehensive Django mapping comments showing:
-
-Equivalent ViewSets and model structures
-
-Permission classes and authentication requirements
-
-Serializer relationships and data handling
-
-Filter backends for query optimization
-
-🧪 Testing Strategy
-Component Testing
-React Testing Library for component tests
-
-Mocked API responses for isolated testing
-
-Accessibility testing with jest-axe
-
-E2E Testing
-Playwright for end-to-end testing
-
-User flow testing for critical paths
-
-Visual regression testing
-
-Performance Testing
-Lighthouse CI for performance metrics
-
-Bundle size monitoring with webpack-bundle-analyzer
-
-🚢 Deployment
-Vercel (Recommended)
-Connect your repository to Vercel
-
-Configure environment variables in Vercel dashboard
-
-Deploy automatically on git push
-
-Other Platforms
-The application can be deployed to any platform supporting Node.js:
-
-Netlify
-
-AWS Amplify
-
-Railway
-
-DigitalOcean App Platform
-
-📈 Performance Optimizations
-Image optimization with Next.js Image component
-
-Code splitting with dynamic imports
-
-Static generation for public pages
-
-CDN for static assets
-
-Database query optimization (when connected to real backend)
-
-🤝 Contributing
-Fork the repository
-
-Create a feature branch (git checkout -b feature/amazing-feature)
-
-Commit your changes (git commit -m 'Add amazing feature')
-
-Push to the branch (git push origin feature/amazing-feature)
-
-Open a Pull Request
-
-Code Standards
-TypeScript strict mode enabled
-
-ESLint for code linting
-
-Prettier for code formatting
-
-Conventional commits for commit messages
-
-Descriptive PR descriptions with screenshots when applicable
-
-📄 License
-This project is licensed under the MIT License - see the LICENSE.md file for details.
-
-🆘 Support
-If you encounter any issues or have questions:
-
-Check the documentation
-
-Search existing issues
-
-Create a new issue with detailed description
-
-🙏 Acknowledgments
-shadcn/ui for the excellent component library
-
-Tailwind CSS for the utility-first CSS framework
-
-Next.js team for the amazing React framework
-
-Stripe for the developer-friendly payment API
-
-📅 Changelog
-See CHANGELOG.md for version history and changes.
-
-SafeSwap - Making digital trust universal. Built with ❤️ for honest people online.
+⚡ *“Trust isn’t earned anymore. It’s engineered.”*  
