@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -18,6 +20,10 @@ import { useNotifications } from '@/hooks/useNotifications'
 import { uploadApi } from '@/lib/api'
 import type { User, UserProfile, DealCategory } from '@/lib/types'
 import { cn } from '@/lib/utils'
+
+type UserUpdateData = Partial<Pick<User, 'firstName' | 'lastName' | 'email' | 'phone' | 'avatar'>> & 
+                     Partial<UserProfile>
+
 
 // Constants - you can move these to a constants file later
 const LANGUAGES = [
@@ -246,7 +252,7 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
 
     try {
       // Prepare update data with proper type handling
-      const updateData: Partial<UserProfile> = {
+      const updateData: UserUpdateData = {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,

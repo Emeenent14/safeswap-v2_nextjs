@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "./src/lib/auth";
 
+// Add this flag at the top to easily enable/disable protection
+const ENABLE_ROUTE_PROTECTION = false; // Set to true when you're ready to enable protection
 
 /**
  * Protected routes that require authentication
@@ -57,6 +59,12 @@ const PUBLIC_PATHS = [
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("auth_token")?.value;
+
+  // TEMPORARY: Skip all protection if flag is disabled
+  if (!ENABLE_ROUTE_PROTECTION) {
+    console.log(`🚧 Route protection disabled - allowing access to: ${pathname}`);
+    return NextResponse.next();
+  }
 
   // Check if route is protected
   const isProtectedPath = PROTECTED_PATHS.some((path) => 
