@@ -1,9 +1,8 @@
-import { ArrowRight, Shield, Users, DollarSign, Clock, CheckCircle, Star, Zap, Lock } from "lucide-react"
+import { ArrowRight, Shield, Users, DollarSign, CheckCircle, Star, Zap, Lock } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import PublicLayout from "@/components/layout/PublicLayout"
 
 const features = [
